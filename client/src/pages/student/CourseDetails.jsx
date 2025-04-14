@@ -25,7 +25,7 @@ const CourseDetails = () => {
 
   useEffect(() => {
     fetchCourseData();
-  }, []);
+  }, [allCourses]);
 
   // const fetchCourseData = () => {
   //   const findCourse = allCourses.find(course => course._id === id);
@@ -115,7 +115,7 @@ const CourseDetails = () => {
         <ul className="list-disc md:pl-10 pl-4 pr-4 py-2 text-gray-600 border-t border-gray-300">
           {chapter.chapterContent.map((lecture, i) =>(
             <li key={i} className="flex items-start gap-2 py-1">
-              <img src={assets.play_icon} alt="" className="w-h-4 mt-1"/>
+              <img src={assets.play_icon} alt="play icon" className="w-4 h-4 mt-1"/>
               <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
                 <p>{lecture.lectureTitle}</p>
                 <div className="flex gap-2">
