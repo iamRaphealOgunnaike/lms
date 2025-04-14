@@ -4,6 +4,9 @@ import { assets } from "../../assets/assets";
 import { AppContext } from "../../context/AppContext";
 import { useParams } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
+import YouTube from "react-youtube";
+import Footer from "../../components/student/Footer";
+import Rating from "../../components/student/Rating";
 
 const Player = () => {
   const { enrolledCourses, calculateChapterTime } = useContext(AppContext);
@@ -12,13 +15,21 @@ const Player = () => {
   const [openSections, setOpenSections] = useState({});
   const [playerData, setPlayerData] = useState(null);
 
+  // const getCourseData = () => {
+  //   enrolledCourses.map((course) => {
+  //     if (courseData._id === courseId) {
+  //       setCourseData(course);
+  //     }
+  //   });
+  // };
+// Ai -------------------------------------------------------------------------------
   const getCourseData = () => {
-    enrolledCourses.map((course) => {
-      if (courseData._id === courseId) {
-        setCourseData(course);
-      }
-    });
+    const course = enrolledCourses.find((course) => course._id === courseId);
+    if (course) {
+      setCourseData(course);
+    }
   };
+  // Ai -------------------------------------------------------------------------------
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({
@@ -29,11 +40,11 @@ const Player = () => {
 
   useEffect(() => {
     getCourseData();
-  }, []);
+  }, [enrolledCourses]);
 
   return (
     <>
-      <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:gird-cols-2 gap-10 md:px-36">
+      <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36">
         {/*Left column */}
         <div className="text-gray-800">
           <h2 className="text-xl font-semibold">Course Structure</h2>
@@ -113,10 +124,28 @@ const Player = () => {
                 </div>
               ))}
           </div>
+
+          <div className="flex items-center gap-2 py-3 mt-10">
+            <h1 className="text-xl font-bold ">Rate this Course</h1>
+            <Rating initialRating={0}/>
+          </div>
+
+
         </div>
         {/*Right column */}
-        <div></div>
+        <div className="md:mt-10">
+          {playerData ? (<div>
+            <YouTube videoId={playerData.lectureUrl.split('/').pop()}  iframeClassName="w-full aspect-video"/>
+                    <div className="flex justify-between items-start mt-1">
+                      <p>{playerData.chapter}.{playerData.lecture}{playerData.lectureTitle}</p>
+                      <button className="text-blue-600">{ false ? 'Completed ' : 'Mark Complete'}</button>
+                    </div>
+          </div>
+        
+        ) : <img src={courseData ? courseData.courseThumbnail : ''} alt="" />}
+        </div>
       </div>
+      <Footer/>
     </>
   );
 };
