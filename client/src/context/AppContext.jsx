@@ -62,7 +62,7 @@ export const AppContextProvider = (props) => {
   const navigate = useNavigate();
 
   const {getToken} = useAuth()
-  const {user} = useUser()
+  const {user} = useUser() 
 
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(true);
@@ -126,6 +126,7 @@ export const AppContextProvider = (props) => {
     const logToken = async () => {
       console.log(await getToken());
     }
+
 
   useEffect(()=>{
     if (user){
