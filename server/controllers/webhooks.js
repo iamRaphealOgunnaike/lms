@@ -125,7 +125,7 @@ export const stripewebhooks = async (request, response ) => {
   }
 
   // return a response to acknowledge receipt of the event
-  response.json({ received: true });
+  //response.json({ received: true });
 
 //     case "customer.created": {
 //       const customer = event.data.object;
