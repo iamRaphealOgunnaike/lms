@@ -10,7 +10,7 @@ userRouter.get('/data', getUserData)
 
 
 // Route to get user's enrolled courses
-userRouter.get('/enrolled-course', userEnrolledCourses)
+userRouter.get('/enrolled-courses', userEnrolledCourses)
 
 // Route to get user's Purchase
 userRouter.post('/purchase', purchaseCourse)
