@@ -21,6 +21,7 @@ userRouter.post('/get-course-progress', getUserCourseProgress)
 
 // Add user ratings
 userRouter.post('/add-rating', addUserRatings);
+
 export default userRouter; 
 
 

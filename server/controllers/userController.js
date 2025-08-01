@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
 import Course from "../models/Course.js";
 import Stripe from "stripe";
-import CourseProgress from "../models/CourseProgress.js";
+import { CourseProgress } from "../models/CourseProgress.js";
 
 //import Paystack from "paystack-api" ---- Alternative to Stripe---
 
@@ -163,34 +163,79 @@ export const addUserRatings = async (req, res) => {
     if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
       return res.json({ success: false, message: "Invalid Details" });
     }
+
     try {
       const course = await Course.findById(courseId);
 
-      if(!course) {
+      if (!course) {
         return res.json({ success: false, message: "Course Not Found" });
       }
+
       const user = await User.findById(userId);
 
-      if(!user || !user.enrolledCourses.includes(courseId)){
-        return res.json({ success: false, message: "User has not purchase this Course." });
+      if (!user || !user.enrolledCourses.includes(courseId)) {
+        return res.json({ success: false, message: "User has not purchased this Course." });
       }
 
       const existingRatingIndex = course.ratings.findIndex(r => r.userId.toString() === userId);
 
-      if(existingRatingIndex > -1) {
+      if (existingRatingIndex > -1) {
         course.ratings[existingRatingIndex].rating = rating;
-      }
-      else {
+      } else {
         course.courseRatings.push({ userId, rating });
       }
+
       await course.save();
 
       return res.json({ success: true, message: "Rating Updated Successfully" });
+
     } catch (error) {
       return res.json({ success: false, message: error.message });
+    }
+
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
+
+
+// export const addUserRatings = async (req, res) => {
+//   try {
+//     const userId = req.auth.userId;
+//     const { courseId, rating } = req.body;
+
+//     if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
+//       return res.json({ success: false, message: "Invalid Details" });
+//     }
+//     try {
+//       const course = await Course.findById(courseId);
+
+//       if(!course) {
+//         return res.json({ success: false, message: "Course Not Found" });
+//       }
+//       const user = await User.findById(userId);
+
+//       if(!user || !user.enrolledCourses.includes(courseId)){
+//         return res.json({ success: false, message: "User has not purchase this Course." });
+//       }
+
+//       const existingRatingIndex = course.ratings.findIndex(r => r.userId.toString() === userId);
+
+//       if(existingRatingIndex > -1) {
+//         course.ratings[existingRatingIndex].rating = rating;
+//       }
+//       else {
+//         course.courseRatings.push({ userId, rating });
+//       }
+//       await course.save();
+
+//       return res.json({ success: true, message: "Rating Updated Successfully" });
+
+//     } catch (error) {
+//       return res.json({ success: false, message: error.message });
       
-    } 
- };
+//     } 
+//  };
 
 // export const addUserRatings = async (req, res) => {
 //   try {
