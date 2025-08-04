@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
 import Course from "../models/Course.js";
 import Stripe from "stripe";
-import { CourseProgress } from "../models/CourseProgress.js";
+import {CourseProgress } from "../models/CourseProgress.js";
 
 //import Paystack from "paystack-api" ---- Alternative to Stripe---
 
@@ -134,6 +134,56 @@ export const updateUserCourseProgress = async (req, res) => {
     
 }
 
+// ai for updateUserRole
+
+// export const updateUserRole = async (req, res) => {
+//     try {
+//         const { userId } = req.body;  // 👈 use body, not query
+
+//         if (!userId) {
+//             return res.status(400).json({ message: "User ID is required" });
+//         }
+
+//         const user = await User.findById(userId);
+//         if (!user) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+
+//         user.isEducator = true;
+//         await user.save();
+
+//         res.status(200).json({ message: "User promoted to educator successfully", user });
+//     } catch (error) {
+//         console.error("Error promoting user:", error);
+//         res.status(500).json({ message: "Internal server error" });
+//     }
+// };
+
+export const updateUserRole = async (req, res) => {
+  try {
+    const userId = req.auth.userId;  // ✅ Use auth middleware
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is missing from auth" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.isEducator = true;
+    await user.save();
+
+    res.status(200).json({ success: true, message: "User promoted to educator successfully", user });
+  } catch (error) {
+    console.error("Error promoting user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
 // get User Course Progress
 export const getUserCourseProgress = async (req, res) => {
   try {
@@ -199,77 +249,3 @@ export const addUserRatings = async (req, res) => {
 };
 
 
-// export const addUserRatings = async (req, res) => {
-//   try {
-//     const userId = req.auth.userId;
-//     const { courseId, rating } = req.body;
-
-//     if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
-//       return res.json({ success: false, message: "Invalid Details" });
-//     }
-//     try {
-//       const course = await Course.findById(courseId);
-
-//       if(!course) {
-//         return res.json({ success: false, message: "Course Not Found" });
-//       }
-//       const user = await User.findById(userId);
-
-//       if(!user || !user.enrolledCourses.includes(courseId)){
-//         return res.json({ success: false, message: "User has not purchase this Course." });
-//       }
-
-//       const existingRatingIndex = course.ratings.findIndex(r => r.userId.toString() === userId);
-
-//       if(existingRatingIndex > -1) {
-//         course.ratings[existingRatingIndex].rating = rating;
-//       }
-//       else {
-//         course.courseRatings.push({ userId, rating });
-//       }
-//       await course.save();
-
-//       return res.json({ success: true, message: "Rating Updated Successfully" });
-
-//     } catch (error) {
-//       return res.json({ success: false, message: error.message });
-      
-//     } 
-//  };
-
-// export const addUserRatings = async (req, res) => {
-//   try {
-//     const userId = req.auth.userId;
-//     const { courseId, rating } = req.body;
-
-//     if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
-//       return res.json({ success: false, message: "Invalid Details" });
-//     }
-
-//     const course = await Course.findById(courseId);
-//     if (!course) {
-//       return res.json({ success: false, message: "Course Not Found" });
-//     }
-
-//     const user = await User.findById(userId);
-//     if (!user || !user.enrolledCourses.includes(courseId)) {
-//       return res.json({ success: false, message: "User has not purchased this Course." });
-//     }
-
-//     const existingRatingIndex = course.ratings.findIndex(
-//       r => r.userId.toString() === userId
-//     );
-
-//     if (existingRatingIndex > -1) {
-//       course.ratings[existingRatingIndex].rating = rating;
-//     } else {
-//       course.ratings.push({ userId, rating });
-//     }
-
-//     await course.save();
-
-//     return res.json({ success: true, message: "Rating Updated Successfully" });
-//   } catch (error) {
-//     return res.json({ success: false, message: error.message });
-//   }
-// };
