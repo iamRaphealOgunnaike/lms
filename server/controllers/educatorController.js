@@ -2,7 +2,8 @@ import { clerkClient } from "@clerk/express";
 import Course from "../models/Course.js";
 import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.js";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "../configs/cloudinary.js";
+
 
 // update role to educator
 
@@ -26,6 +27,7 @@ export const updateRoleToEducator = async (req, res) => {
 
 export const addCourse = async (req, res) => {
   try {
+
     const { courseData } = req.body;
     const imageFile = req.file;
     const educatorId = req.auth.userId;
@@ -37,14 +39,15 @@ export const addCourse = async (req, res) => {
     const parsedCourseData = await JSON.parse(courseData);
     parsedCourseData.educator = educatorId;
 
-    const newCourse = await Course.create(parsedCourseData);
-    const imageUpload = await cloudinary.uploader.upload(imageFile.path);
-    newCourse.courseThumbnail = imageUpload.secure_url;
+    const imageUpload = await cloudinary.uploader.upload(imageFile.path)
+    console.log("Thumbnail", imageUpload)
+    const newCourse = await Course.create({...parsedCourseData, "courseThumbnail": imageUpload.secure_url});
+    // newCourse.courseThumbnail = imageUpload.secure_url;
     await newCourse.save();
 
     res.json({ success: true, message: "Course Added" });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.json({ success: false, error: error, message: error.message });
   }
 };
 //---- Ai----

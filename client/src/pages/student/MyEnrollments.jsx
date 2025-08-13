@@ -3,6 +3,10 @@ import { AppContext } from '../../context/AppContext'
 import { Line } from 'rc-progress'
 import Footer from '../../components/student/Footer'
 import toast from 'react-hot-toast'
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const MyEnrollments = () => {
 
@@ -14,14 +18,29 @@ const getCourseProgress = async () => {
   try {
     const token = await getToken();
     const tempProgressArray = await Promise.all(enrolledCourses.map(async (course) => {
-      const { data } = await axios.post(`${backendUrl}/api/user/course-progress`, {courseId: course._id}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }})
+      // const { data } = await axios.post(`${backendUrl}/api/user/course-progress`, {courseId: course._id}, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   }})
+// Ai correction 
+
+
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/get-course-progress`,
+        { courseId: course._id },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+
 
         let totalLectures  = calculateNoOfLectures(course);
 
-       const lectureCompleted = data.progressData ? data.progressData.lectureCompleted.length : 0;
+       //const lectureCompleted = data.progressData ? data.progressData.lectureCompleted.length : 0;
+       // ai correction 
+       const lectureCompleted = data.progressData ? data.progressData.lecturesCompleted.length : 0;
+
        
        return {
         totalLectures,
